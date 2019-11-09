@@ -25,6 +25,7 @@ class _LoginPage extends State<LoginPage> {
 
   void _onLogin() async {
     await FirebaseAuth.instance.signInAnonymously();
+    // TODO update UserProvider
     Navigator.popAndPushNamed(
       context,
       '/news'

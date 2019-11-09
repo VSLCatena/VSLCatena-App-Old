@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:vsl_catena/models/user_provider.dart';
 import 'package:vsl_catena/modules/login/login_page.dart';
+import 'package:vsl_catena/modules/news/news_edit_page.dart';
 import 'package:vsl_catena/modules/news/news_item_page.dart';
 import 'package:vsl_catena/modules/news/news_list_page.dart';
 import 'package:vsl_catena/translation/localization.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(
+  ChangeNotifierProvider(
+    builder: (context) => UserProvider(),
+    child: MyApp()
+  )
+);
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -18,7 +26,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginPage(),
         '/news': (context) => NewsListPage(),
-        '/news/item': (context) => NewsItemPage()
+        '/news/item': (context) => NewsItemPage(),
+        '/news/edit/item': (context) => NewsEditPage()
       },
       supportedLocales: [
         const Locale('nl', ''),

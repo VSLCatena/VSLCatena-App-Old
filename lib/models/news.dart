@@ -3,12 +3,25 @@ import 'package:vsl_catena/models/user.dart';
 
 class News {
   String title, content;
-  UserFetcher user;
+  UserFetcher user, userLastEdited;
+  Timestamp date, dateLastEdited;
 
-  News(this.title, this.content, this.user);
+  News(
+    this.title, 
+    this.content,
+    this.user,
+    this.date,
+    this.userLastEdited,
+    this.dateLastEdited
+  );
 
   News.fromSnapshot(DocumentSnapshot snapshot)
-    : title = snapshot["title"],
-      content = snapshot["content"],
-      user = UserFetcher(snapshot["user"]);
+    : this(
+        snapshot["title"],
+        snapshot["content"],
+        UserFetcher.fromReference(snapshot["user"]),
+        snapshot['date'],
+        UserFetcher.fromReference(snapshot['userLastEdited']),
+        snapshot['dateLastEdited']
+    );
 }

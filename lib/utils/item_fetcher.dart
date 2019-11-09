@@ -1,51 +1,35 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 abstract class ItemFetcher<T> {
-  T item;
   final DocumentReference _reference;
-  bool isLoading = false;
-  bool isDone = false;
-  ValueChanged<T> _onChange;
+  List<StreamSubscription> _subscriptions = List();
   
+  T item;
 
   ItemFetcher(this._reference);
 
   void observe(ValueChanged<T> onChange) {
-    _onChange = onChange;
-    fetch();
+    if (onChange == null) return;
+
+    _subscriptions.add(
+      _reference.snapshots().listen(
+        (DocumentSnapshot documentSnapshot) => onChange(convert(documentSnapshot))
+      )
+    );
   }
 
-  void observeIfNeeded(ValueChanged<T> onChange) {
-    if (isDone) return;
-    
-    observe(onChange);
+  Future<T> get() async {
+    final document = await _reference.get();
+    return convert(document);
   }
 
-  void _callOnChange(T item) {
-    if (_onChange != null) {
-      _onChange(item);
-    }
-    _onChange = null;
+  void dispose() {
+    _subscriptions.forEach((it) => it.cancel());
+    _subscriptions.clear();
   }
 
   T convert(DocumentSnapshot snapshot);
-
-  fetch() async {
-    if (isDone) {
-      _callOnChange(item);
-    }
-
-    if (isLoading || isDone) return;
-
-    isLoading = true;
-
-    var snapshot = await _reference.get();
-    item = convert(snapshot);
-
-    isDone = true;
-    isLoading = false;
-
-    _callOnChange(item);
-  }
 }

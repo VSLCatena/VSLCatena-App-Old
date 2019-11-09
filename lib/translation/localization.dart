@@ -24,6 +24,14 @@ class Localization {
       'nl': 'Titel',
       'en': 'Title'
     },
+    'general_input_message': {
+      'nl': 'Bericht',
+      'en': 'Message'
+    },
+    'general_input_post': {
+      'nl': 'Plaats',
+      'en': 'Post'
+    },
     'title': {
       'nl': 'V.S.L. Catena',
       'en': 'V.S.L. Catena'
