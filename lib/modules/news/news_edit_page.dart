@@ -6,18 +6,25 @@ import 'package:vsl_catena/models/news.dart';
 import 'package:vsl_catena/translation/localization.dart';
 
 
-class NewsEditPage extends StatelessWidget {
+class NewsEditPage extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() => _NewsEditState();
+}
+
+class _NewsEditState extends State<NewsEditPage> {
+  
+  String _title = "";
+  String _content = "";
 
   void _onSubmit() async {
     final userId = (await FirebaseAuth.instance.currentUser()).uid;
     Firestore.instance.collection('news').document()
       .setData({ 
-        'title': 'title', 
-        'content': 'testestes',
+        'title': _title, 
+        'content': _content,
         'user': userId,
-        'userLastEdited': userId,
-        'date': 0,
-        'dateLastEdited': 0
+        'date': Timestamp.now()
       });
   }
 
@@ -38,6 +45,7 @@ class NewsEditPage extends StatelessWidget {
               labelText: Localization.of(context).get('general_input_title')
             ),
             initialValue: news?.title ?? "",
+            onChanged: (newValue) => _title = newValue,
           )
         ),
         Padding(
@@ -47,6 +55,7 @@ class NewsEditPage extends StatelessWidget {
               labelText: Localization.of(context).get('general_input_message')
             ),
             initialValue: news?.content ?? "",
+            onChanged: (newValue) => _content = newValue,
           )
         ),
         Row(

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
 abstract class FirebaseFetcher<T> {
   String path, orderKey;
@@ -42,7 +43,18 @@ abstract class FirebaseFetcher<T> {
       hasMore = false;
     }
     lastDocument = documents[documents.length - 1];
-    items.addAll(documents.map((document) => convert(document)));
+    items.addAll(
+      documents
+      .map((document) {
+        try { 
+          return convert(document); 
+        } catch(e, s) {
+          stderr.addError("Error converting documentSnapshot to object $e", s);
+          return null; 
+        } 
+      })
+      .where((item) => item != null)
+    );
 
     stateSetter(() {
       isLoading = false;

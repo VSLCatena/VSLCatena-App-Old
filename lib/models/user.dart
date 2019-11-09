@@ -50,8 +50,8 @@ class UserFetcher extends ItemFetcher<User> {
 
   UserFetcher(DocumentReference reference): super(reference);
 
-  factory UserFetcher.fromReference(DocumentReference reference) {
-    if (reference == null) return null;
+  factory UserFetcher.fromReference(reference) {
+    if (reference == null || !(reference is DocumentReference)) return null;
 
     return UserFetcher(reference);
   }
