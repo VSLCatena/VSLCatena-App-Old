@@ -124,7 +124,7 @@ class _NewsListPageState extends State<NewsListPage> {
 
 class _NewsFetcher extends FirebaseFetcher<News> {
 
-  _NewsFetcher(): super("news", "date");
+  _NewsFetcher(): super("news", "date", orderDescending: true);
   
   @override
   News convert(DocumentSnapshot snapshot) {

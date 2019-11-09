@@ -4,15 +4,16 @@ import 'dart:io';
 abstract class FirebaseFetcher<T> {
   String path, orderKey;
   int limit = 10;
+  bool orderDescending = false;
   List<T> items = []; // stores fetched items
   _Fetcher<T> fetcher;
 
-  FirebaseFetcher(this.path, this.orderKey, {this.limit = 10}) {
+  FirebaseFetcher(this.path, this.orderKey, {this.limit = 10, this.orderDescending = false}) {
     _resetFetcher();
   }
 
   void _resetFetcher() {
-    fetcher = _Fetcher(this.path, this.orderKey, limit: this.limit);
+    fetcher = _Fetcher(this.path, this.orderKey, limit: this.limit, orderDescending: this.orderDescending);
     items = [];
   }
 
@@ -47,10 +48,11 @@ abstract class FirebaseFetcher<T> {
 class _Fetcher<T> {
   String path, orderKey;
   int limit = 10;
+  bool orderDescending = false;
   bool isLoading = false;
   bool hasMore = true; // flag for more items available or not
 
-  _Fetcher(this.path, this.orderKey, {this.limit = 10});
+  _Fetcher(this.path, this.orderKey, {this.limit = 10, this.orderDescending = false});
 
   DocumentSnapshot lastDocument; // flag for last document from where next 10 records to be fetched
 
@@ -65,7 +67,7 @@ class _Fetcher<T> {
 
     var query = Firestore.instance
         .collection(this.path)
-        .orderBy(this.orderKey)
+        .orderBy(this.orderKey, descending: orderDescending)
         .limit(this.limit);
 
     if (lastDocument != null) {
