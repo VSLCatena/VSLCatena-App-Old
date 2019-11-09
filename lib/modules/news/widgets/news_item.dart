@@ -49,7 +49,7 @@ class _NewsItem extends State<NewsItem> with ObservingState {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.news.user.item?.name ?? ""),
+              Text(widget.news.user?.item?.name ?? ""),
               editedAt,
             ],
           )

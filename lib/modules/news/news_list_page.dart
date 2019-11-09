@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:vsl_catena/models/user.dart';
 import 'package:vsl_catena/models/user_provider.dart';
 import 'package:vsl_catena/modules/app_drawer.dart';
@@ -31,26 +33,38 @@ class _NewsListPageState extends State<NewsListPage> {
 
   _NewsFetcher newsFetcher;
   ScrollController _scrollController = ScrollController();
+  RefreshController _refreshController = RefreshController(initialRefresh: true);
 
   _NewsListPageState() {
-     newsFetcher = _NewsFetcher(setState);
+     newsFetcher = _NewsFetcher();
 
      _scrollController.addListener(() {  
       double maxScroll = _scrollController.position.maxScrollExtent;  
       double currentScroll = _scrollController.position.pixels;  
       double delta = MediaQuery.of(context).size.height * 0.20;  
       if (maxScroll - currentScroll <= delta) {  
-        newsFetcher.fetch();  
+        _load();  
       }  
     });  
   }
 
-  @override
-  void initState() {
-    super.initState();
-    newsFetcher.fetch();  
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   newsFetcher.fetch();  
+  // }
+
+  void _refresh() async {
+    newsFetcher.reset();
+    await _load();
+    
+    _refreshController.refreshCompleted();
   }
 
+  Future<void> _load() async {
+    await newsFetcher.load();
+    setState(() {});
+  }
 
   @override  
  Widget build(BuildContext context) {
@@ -59,42 +73,30 @@ class _NewsListPageState extends State<NewsListPage> {
         title: Text(Localization.of(context).get("news_title")),  
       ),  
       drawer: AppDrawer.createDrawer(context),
-      body: Column(children: [
-        Expanded(  
-          child: newsFetcher.items.length == 0  
-              ? Center(child: Text(Localization.of(context).get('general_no_data')))  
-              : ListView.builder(  
-                  controller: _scrollController,  
-                  itemCount: newsFetcher.items.length,  
-                  itemBuilder: (context, index) {  
-                    return Card(
-                      child: InkWell(
-                        child: NewsItem(newsFetcher.items[index]),
-                        onTap: () { 
-                          Navigator.pushNamed(
-                            context,
-                            '/news/item',
-                            arguments: newsFetcher.items[index]
-                          );
-                        }
-                       )
-                    );
-                  },  
-              ),  
-        ),  
-        newsFetcher.isLoading  
-            ? Container(  
-              width: MediaQuery.of(context).size.width,  
-              padding: EdgeInsets.all(5),  
-              color: Colors.yellowAccent,  
-              child: Text(  
-                Localization.of(context).get('general_loading'),  
-                textAlign: TextAlign.center,  
-                style: TextStyle(fontWeight: FontWeight.bold),  
-              ),  
-            )  
-            : Container()  
-      ]),  
+      body: SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        onRefresh: () => _refresh(),
+        header: WaterDropMaterialHeader(backgroundColor: Theme.of(context).primaryColor),
+        child: ListView.builder(  
+          controller: _scrollController,  
+          itemCount: newsFetcher.items.length,  
+          itemBuilder: (context, index) {  
+            return Card(
+              child: InkWell(
+                child: NewsItem(newsFetcher.items[index]),
+                onTap: () { 
+                  Navigator.pushNamed(
+                    context,
+                    '/news/item',
+                    arguments: newsFetcher.items[index]
+                  );
+                }
+              )
+            );
+          }   
+        ),
+      ),
       floatingActionButton: Consumer<UserProvider>(
         builder: (context, provider, child) {
           if (provider.currentUser?.role?.isAtLeast(Role.admin) == true) {
@@ -113,6 +115,7 @@ class _NewsListPageState extends State<NewsListPage> {
           }
         }
       )
+      
    );
  } 
   
@@ -120,7 +123,7 @@ class _NewsListPageState extends State<NewsListPage> {
 
 class _NewsFetcher extends FirebaseFetcher<News> {
 
-  _NewsFetcher(Function stateSetter): super("news", "date", stateSetter);
+  _NewsFetcher(): super("news", "date");
   
   @override
   News convert(DocumentSnapshot snapshot) {
