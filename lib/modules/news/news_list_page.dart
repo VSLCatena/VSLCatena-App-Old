@@ -80,7 +80,7 @@ class _NewsListPageState extends State<NewsListPage> {
         header: WaterDropMaterialHeader(backgroundColor: Theme.of(context).primaryColor),
         child: ListView.builder(  
           controller: _scrollController,  
-          itemCount: newsFetcher.items.length, 
+          itemCount: newsFetcher.items.length,
           padding: EdgeInsets.only(bottom: 80),
           itemBuilder: (context, index) {  
             return Card(

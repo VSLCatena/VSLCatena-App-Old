@@ -5,30 +5,36 @@ import 'package:flutter/material.dart';
 
 abstract class ItemFetcher<T> {
   final DocumentReference _reference;
-  List<StreamSubscription> _subscriptions = List();
+  List<ValueChanged<T>> _listeners = List();
+  StreamSubscription<DocumentSnapshot> _subscription;
   
   T item;
 
   ItemFetcher(this._reference);
 
+  void _onChange(DocumentSnapshot document) {
+    item = convert(document);
+    _listeners.forEach((listener) => listener(item));
+  }
+
   void observe(ValueChanged<T> onChange) {
     if (onChange == null) return;
+    _listeners.add(onChange);
 
-    _subscriptions.add(
-      _reference.snapshots().listen(
-        (DocumentSnapshot documentSnapshot) => onChange(convert(documentSnapshot))
-      )
-    );
+    if (_subscription != null) return;
+    _subscription = _reference.snapshots().listen(_onChange);
   }
 
   Future<T> get() async {
+    if (item != null) return item;
+    
     final document = await _reference.get();
-    return convert(document);
+    item = convert(document);
+    return item;
   }
 
   void dispose() {
-    _subscriptions.forEach((it) => it.cancel());
-    _subscriptions.clear();
+    _subscription.cancel();
   }
 
   T convert(DocumentSnapshot snapshot);

@@ -19,8 +19,6 @@ mixin ObservingState<T extends StatefulWidget> on State<T> {
     if (fetcher == null) return;
     
     _fetchers.add(fetcher);
-    fetcher.observe(
-      (_) => setState(() => {})
-    );
+    fetcher.observe((_) => setState(() {}));
   }
 }

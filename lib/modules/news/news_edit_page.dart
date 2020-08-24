@@ -18,9 +18,9 @@ class _NewsEditState extends State<NewsEditPage> {
   String _content = "";
 
   void _onSubmit() async {
-    final userId = (await FirebaseAuth.instance.currentUser()).uid;
-    Firestore.instance.collection('news').document()
-      .setData({ 
+    final userId = FirebaseAuth.instance.currentUser.uid;
+    FirebaseFirestore.instance.collection('news').doc()
+      .set({
         'title': _title, 
         'content': _content,
         'user': userId,

@@ -17,11 +17,11 @@ class News {
 
   News.fromSnapshot(DocumentSnapshot snapshot)
     : this(
-        snapshot["title"],
-        snapshot["content"],
-        UserFetcher.fromReference(snapshot["user"]),
-        snapshot['date'],
-        UserFetcher.fromReference(snapshot['userLastEdited']),
-        snapshot['dateLastEdited']
+        snapshot.get("title"),
+        snapshot.get("content"),
+        UserFetcher.get(snapshot.get("user")),
+        snapshot.get('date'),
+        UserFetcher.get(snapshot.get('userLastEdited')),
+        snapshot.get('dateLastEdited')
     );
 }

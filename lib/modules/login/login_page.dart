@@ -40,7 +40,7 @@ class _LoginPage extends State<LoginPage> {
   }
 
   void _checkIfLoggedIn() async {
-    var currentUser = await FirebaseAuth.instance.currentUser();
+    var currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
       Navigator.popAndPushNamed(
         context,
@@ -49,12 +49,12 @@ class _LoginPage extends State<LoginPage> {
     }
   }
 
-  @override  
+  @override
  Widget build(BuildContext context) {
-   return Scaffold(  
-     appBar: AppBar(  
-       title: Text(Localization.of(context).get('login_title')),  
-     ),  
+   return Scaffold(
+     appBar: AppBar(
+       title: Text(Localization.of(context).get('login_title')),
+     ),
      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
        children: [
@@ -96,7 +96,7 @@ class _LoginPage extends State<LoginPage> {
            ),
        ],
      ),
-   );  
- } 
-  
+   );
+ }
+
 }

@@ -9,28 +9,30 @@ class NewsItem extends StatefulWidget {
 
   NewsItem(this.news);
 
+
   @override
   _NewsItem createState() => _NewsItem();
 }
 
 class _NewsItem extends State<NewsItem> with ObservingState {
 
-  @override
-  void initState() {
-    observeStates([
-      widget.news.user,
-      widget.news.userLastEdited
-    ]);
-    super.initState();
+  // @override
+  // void initState() {
+  //   observeStates([
+  //     widget.news.user,
+  //     widget.news.userLastEdited
+  //   ]);
+  //   super.initState();
+  // }
+
+  String formatTimestamp(int timestamp) {
+    var format = new DateFormat('dd-MM-yyyy, HH:mm');
+    var date = new DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    return format.format(date);
   }
 
   @override
   Widget build(BuildContext context) {
-    String formatTimestamp(int timestamp) {
-      var format = new DateFormat('dd-mm-yyyy, HH:mm');
-      var date = new DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-      return format.format(date);
-    }
 
     Widget editedAt = Container();
     if (widget.news.userLastEdited != null) {

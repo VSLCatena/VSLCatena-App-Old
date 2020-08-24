@@ -1,4 +1,4 @@
-# pf2_automation
+# V.S.L. Catena App
 
 A new Flutter project.
 

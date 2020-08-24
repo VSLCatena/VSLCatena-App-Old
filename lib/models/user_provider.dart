@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
 import 'package:flutter/foundation.dart';
 import 'package:vsl_catena/models/user.dart';
 
@@ -16,11 +16,11 @@ class UserProvider extends ChangeNotifier {
   String get currentUid => _uid;
 
   void startListening() async {
-    _uid = (await FirebaseAuth.instance.currentUser())?.uid;
+    _uid = fbAuth.FirebaseAuth.instance.currentUser.uid;
 
     if (_uid == null) return;
 
-    Firestore.instance.document("users/$_uid").snapshots().listen(_onSnapshot);
+    FirebaseFirestore.instance.doc("users/$_uid").snapshots().listen(_onSnapshot);
   }
 
   void _onSnapshot(DocumentSnapshot document) {

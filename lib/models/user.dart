@@ -11,7 +11,7 @@ class User {
     if (snapshot == null) return null;
 
     try {
-      return User(snapshot["name"], Role.fromLevel(snapshot["role"]));
+      return User(snapshot.get("name"), Role.fromLevel(snapshot.get("role")));
     } catch(e) {
       return User("", Role.user);
     }
@@ -47,13 +47,19 @@ class Role {
 }
 
 class UserFetcher extends ItemFetcher<User> {
+  static Map<String, UserFetcher> _pool = Map();
 
-  UserFetcher(DocumentReference reference): super(reference);
+  UserFetcher(DocumentReference user): super(user);
+  
+  factory UserFetcher.get(String userId) {
+    if (userId == null) return null;
 
-  factory UserFetcher.fromReference(reference) {
-    if (reference == null || !(reference is DocumentReference)) return null;
+    if (!_pool.containsKey(userId)) {
+      _pool[userId] = UserFetcher(FirebaseFirestore.instance.doc(userId));
+      _pool[userId].get();
+    }
 
-    return UserFetcher(reference);
+    return _pool[userId];
   }
 
   @override

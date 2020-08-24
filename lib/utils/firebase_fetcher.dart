@@ -65,7 +65,7 @@ class _Fetcher<T> {
       return null;
     }
 
-    var query = Firestore.instance
+    var query = FirebaseFirestore.instance
         .collection(this.path)
         .orderBy(this.orderKey, descending: orderDescending)
         .limit(this.limit);
@@ -79,6 +79,8 @@ class _Fetcher<T> {
     if (documents.length < this.limit) {
       hasMore = false;
     }
+    isLoading = false;
+
     lastDocument = documents[documents.length - 1];
 
     return documents;
