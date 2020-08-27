@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:vsl_catena/models/fetchers/promo_fetcher.dart';
 import 'package:vsl_catena/models/promo.dart';
 import 'package:vsl_catena/models/user.dart';
 import 'package:vsl_catena/models/user_provider.dart';
@@ -33,22 +34,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  _PromoFetcher promoFetcher;
+  PromoFetcher _promoFetcher;
   RefreshController _refreshController = RefreshController(initialRefresh: true);
 
   _HomePageState() {
-    promoFetcher = _PromoFetcher();
+    _promoFetcher = PromoFetcher();
   }
 
   void _refresh() async {
-    promoFetcher.reset();
+    _promoFetcher.reset();
     await _load();
 
     _refreshController.refreshCompleted();
   }
 
   Future<void> _load() async {
-    await promoFetcher.load();
+    await _promoFetcher.load();
     setState(() {});
   }
 
@@ -65,56 +66,24 @@ class _HomePageState extends State<HomePage> {
           onRefresh: () => _refresh(),
           header: WaterDropMaterialHeader(backgroundColor: Theme.of(context).primaryColor),
           child: ListView.builder(
-              itemCount: promoFetcher.items.length,
+              itemCount: _promoFetcher.items.length,
               padding: EdgeInsets.only(bottom: 80),
               itemBuilder: (context, index) {
                 return Card(
                     child: InkWell(
-                        child: PromoItem(promoFetcher.items[index]),
+                        child: PromoItem(_promoFetcher.items[index]),
                         onTap: () {
                           Navigator.pushNamed(
                               context,
                               '/news/item',
-                              arguments: promoFetcher.items[index]
+                              arguments: _promoFetcher.items[index]
                           );
                         }
                     )
                 );
               }
           ),
-        ),
-        floatingActionButton: Consumer<UserProvider>(
-            builder: (context, provider, child) {
-              // If we're not admin, we just return an empty container
-              // TODO check if the user is in any committee
-              if (provider.currentUser?.role?.isAtLeast(Role.admin) != true) {
-                return Container();
-              }
-
-              return FloatingActionButton(
-                child: Icon(Icons.add),
-                onPressed: (){
-                  Navigator.pushNamed(
-                      context,
-                      '/promo/edit/item',
-                      arguments: null
-                  );
-                },
-              );
-            }
         )
-
     );
-  }
-
-}
-
-class _PromoFetcher extends FirebaseFetcher<Promo> {
-
-  _PromoFetcher(): super("promo", "date", orderDescending: true);
-
-  @override
-  Promo convert(DocumentSnapshot snapshot) {
-    return Promo.fromSnapshot(snapshot);
   }
 }

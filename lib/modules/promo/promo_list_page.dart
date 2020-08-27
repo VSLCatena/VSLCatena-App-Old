@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:vsl_catena/models/fetchers/promo_fetcher.dart';
 import 'package:vsl_catena/models/promo.dart';
 import 'package:vsl_catena/models/user.dart';
 import 'package:vsl_catena/models/user_provider.dart';
@@ -33,12 +34,12 @@ class PromoListPage extends StatefulWidget {
 
 class _PromoListPageState extends State<PromoListPage> {
 
-  _PromoFetcher promoFetcher;
+  PromoFetcher _promoFetcher;
   ScrollController _scrollController = ScrollController();
   RefreshController _refreshController = RefreshController(initialRefresh: true);
 
   _PromoListPageState() {
-    promoFetcher = _PromoFetcher();
+    _promoFetcher = PromoFetcher();
 
     _scrollController.addListener(() {
       double maxScroll = _scrollController.position.maxScrollExtent;
@@ -57,14 +58,14 @@ class _PromoListPageState extends State<PromoListPage> {
   // }
 
   void _refresh() async {
-    promoFetcher.reset();
+    _promoFetcher.reset();
     await _load();
 
     _refreshController.refreshCompleted();
   }
 
   Future<void> _load() async {
-    await promoFetcher.load();
+    await _promoFetcher.load();
     setState(() {});
   }
 
@@ -82,17 +83,17 @@ class _PromoListPageState extends State<PromoListPage> {
           header: WaterDropMaterialHeader(backgroundColor: Theme.of(context).primaryColor),
           child: ListView.builder(
               controller: _scrollController,
-              itemCount: promoFetcher.items.length,
+              itemCount: _promoFetcher.items.length,
               padding: EdgeInsets.only(bottom: 80),
               itemBuilder: (context, index) {
                 return Card(
                     child: InkWell(
-                        child: PromoItem(promoFetcher.items[index]),
+                        child: PromoItem(_promoFetcher.items[index]),
                         onTap: () {
                           Navigator.pushNamed(
                               context,
                               '/news/item',
-                              arguments: promoFetcher.items[index]
+                              arguments: _promoFetcher.items[index]
                           );
                         }
                     )
@@ -124,14 +125,4 @@ class _PromoListPageState extends State<PromoListPage> {
     );
   }
 
-}
-
-class _PromoFetcher extends FirebaseFetcher<Promo> {
-
-  _PromoFetcher(): super("promo", "date", orderDescending: true);
-
-  @override
-  Promo convert(DocumentSnapshot snapshot) {
-    return Promo.fromSnapshot(snapshot);
-  }
 }

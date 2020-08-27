@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:vsl_catena/models/fetchers/news_fetcher.dart';
 import 'package:vsl_catena/models/user.dart';
 import 'package:vsl_catena/models/user_provider.dart';
 import 'package:vsl_catena/modules/app_drawer.dart';
@@ -31,12 +32,12 @@ class NewsListPage extends StatefulWidget {
 
 class _NewsListPageState extends State<NewsListPage> {
 
-  _NewsFetcher newsFetcher;
+  NewsFetcher _newsFetcher;
   ScrollController _scrollController = ScrollController();
   RefreshController _refreshController = RefreshController(initialRefresh: true);
 
   _NewsListPageState() {
-     newsFetcher = _NewsFetcher();
+     _newsFetcher = NewsFetcher();
 
      _scrollController.addListener(() {
        double maxScroll = _scrollController.position.maxScrollExtent;
@@ -55,14 +56,14 @@ class _NewsListPageState extends State<NewsListPage> {
   // }
 
   void _refresh() async {
-    newsFetcher.reset();
+    _newsFetcher.reset();
     await _load();
 
     _refreshController.refreshCompleted();
   }
 
   Future<void> _load() async {
-    await newsFetcher.load();
+    await _newsFetcher.load();
     setState(() {});
   }
 
@@ -80,17 +81,17 @@ class _NewsListPageState extends State<NewsListPage> {
         header: WaterDropMaterialHeader(backgroundColor: Theme.of(context).primaryColor),
         child: ListView.builder(  
           controller: _scrollController,  
-          itemCount: newsFetcher.items.length,
+          itemCount: _newsFetcher.items.length,
           padding: EdgeInsets.only(bottom: 80),
           itemBuilder: (context, index) {  
             return Card(
               child: InkWell(
-                child: NewsItem(newsFetcher.items[index]),
+                child: NewsItem(_newsFetcher.items[index]),
                 onTap: () { 
                   Navigator.pushNamed(
                     context,
                     '/news/item',
-                    arguments: newsFetcher.items[index]
+                    arguments: _newsFetcher.items[index]
                   );
                 }
               )
@@ -120,15 +121,5 @@ class _NewsListPageState extends State<NewsListPage> {
       
    );
  } 
-  
-}
 
-class _NewsFetcher extends FirebaseFetcher<News> {
-
-  _NewsFetcher(): super("news", "date", orderDescending: true);
-  
-  @override
-  News convert(DocumentSnapshot snapshot) {
-    return News.fromSnapshot(snapshot);
-  }
 }

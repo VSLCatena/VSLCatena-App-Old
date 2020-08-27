@@ -16,9 +16,15 @@ import 'package:vsl_catena/translation/localization.dart';
             child: Image(image: AssetImage('assets/logo.png')),
           ),
           ListTile(
-            title: Text(Localization.of(context).get("drawer_news")),
+            title: Text(Localization.of(context).get("drawer_home")),
             onTap: () {
               navigateTo(context, '/');
+            },
+          ),
+          ListTile(
+            title: Text(Localization.of(context).get("drawer_news")),
+            onTap: () {
+              navigateTo(context, '/news');
             },
           ),
           ListTile(
@@ -35,10 +41,13 @@ import 'package:vsl_catena/translation/localization.dart';
   }
 
   static void navigateTo(BuildContext context, String namedRoute) {
+    Navigator.of(context).pop();
+
     if (namedRoute == "/") {
       Navigator.popUntil(context, (route) => route.isFirst);
       return;
     }
+
     Navigator.pushNamedAndRemoveUntil(context, namedRoute, (route) => route.isFirst);
   }
 

@@ -9,7 +9,7 @@ class User {
   User(this.id, this.name, this.role);
 
   factory User.fromSnapshot(DocumentSnapshot snapshot) {
-    if (snapshot == null) return null;
+    if (snapshot == null || snapshot.data() == null) return null;
 
     return User(snapshot.id, snapshot.data()["name"], Role.fromLevel(snapshot.data()["role"]));
   }

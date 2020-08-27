@@ -60,6 +60,10 @@ class Localization {
       'nl': 'Login',
       'en': 'Login'
     },
+    'drawer_home': {
+      'nl': 'Home',
+      'en': 'Home'
+    },
     'drawer_news': {
       'nl': 'Nieuws',
       'en': 'News'
