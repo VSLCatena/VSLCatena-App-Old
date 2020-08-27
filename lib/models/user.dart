@@ -55,7 +55,7 @@ class UserFetcher extends ItemFetcher<User> {
     if (userId == null) return null;
 
     if (!_pool.containsKey(userId)) {
-      _pool[userId] = UserFetcher(FirebaseFirestore.instance.doc(userId));
+      _pool[userId] = UserFetcher(FirebaseFirestore.instance.collection("users").doc(userId));
       _pool[userId].get();
     }
 

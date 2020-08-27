@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:vsl_catena/translation/localization.dart';
+import 'package:http/http.dart' as http;
 
 
 class LoginPage extends StatefulWidget {
@@ -23,13 +24,19 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPage extends State<LoginPage> {
 
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   void _onLogin() async {
     await FirebaseAuth.instance.signInAnonymously();
+    _checkIfLoggedIn();
+//    _doLoginCall();
+//    await FirebaseAuth.instance.signInAnonymously();
     // TODO update UserProvider
-    Navigator.popAndPushNamed(
-      context,
-      '/news'
-    );
+//    Navigator.popAndPushNamed(
+//      context,
+//      '/news'
+//    );
   }
 
   @override
@@ -47,6 +54,27 @@ class _LoginPage extends State<LoginPage> {
         '/news'
       );
     }
+  }
+
+  void _doLoginCall() async {
+    var response = http.post(
+        Uri.encodeFull("----"),
+        body: {
+          "username": _usernameController.text,
+          "password": _passwordController.text,
+        },
+        headers: { "Accept": "application/json" }
+    );
+
+    await response;
+
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,6 +95,7 @@ class _LoginPage extends State<LoginPage> {
               Padding(
                 padding: EdgeInsets.all(8),
                 child: TextFormField(
+                  controller: _usernameController,
                   decoration: InputDecoration(
                     labelText: Localization.of(context).get('login_username')
                   ),
@@ -75,6 +104,7 @@ class _LoginPage extends State<LoginPage> {
               Padding(
                 padding: EdgeInsets.all(8),
                 child: TextFormField(
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: Localization.of(context).get('login_password')
                   ),

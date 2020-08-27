@@ -16,7 +16,7 @@ class UserProvider extends ChangeNotifier {
   String get currentUid => _uid;
 
   void startListening() async {
-    _uid = fbAuth.FirebaseAuth.instance.currentUser.uid;
+    _uid = fbAuth.FirebaseAuth.instance.currentUser?.uid;
 
     if (_uid == null) return;
 

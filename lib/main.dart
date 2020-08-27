@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vsl_catena/models/user_provider.dart';
@@ -7,24 +9,32 @@ import 'package:vsl_catena/modules/news/news_item_page.dart';
 import 'package:vsl_catena/modules/news/news_list_page.dart';
 import 'package:vsl_catena/translation/localization.dart';
 
-void main() => runApp(
-  ChangeNotifierProvider(
-    builder: (context) => UserProvider(),
-    child: MyApp()
-  )
-);
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(
+      ChangeNotifierProvider(
+          builder: (context) => UserProvider(),
+          child: MyApp()
+      )
+  );
+}
 
 class MyApp extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var initialRoute = FirebaseAuth.instance.currentUser?.uid == null ? "/" : "/news";
     return MaterialApp(
       onGenerateTitle: (BuildContext context) => Localization.of(context).get('title'),
+      initialRoute: initialRoute,
       localizationsDelegates: [
         const LocalizationDelegate()
       ],
       routes: {
-        '/': (context) => LoginPage(),
+        '/': (context) => NewsListPage(),
+        '/login': (context) => LoginPage(),
         '/news': (context) => NewsListPage(),
         '/news/item': (context) => NewsItemPage(),
         '/news/edit/item': (context) => NewsEditPage()

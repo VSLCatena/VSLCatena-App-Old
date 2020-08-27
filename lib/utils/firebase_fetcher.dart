@@ -13,6 +13,7 @@ abstract class FirebaseFetcher<T> {
   }
 
   void _resetFetcher() {
+    fetcher?.isDestroyed = true;
     fetcher = _Fetcher(this.path, this.orderKey, limit: this.limit, orderDescending: this.orderDescending);
     items = [];
   }
@@ -20,10 +21,12 @@ abstract class FirebaseFetcher<T> {
   T convert(DocumentSnapshot snapshot);
 
   Future<void> load() async {
-    if (!fetcher.hasMore) return;
+    var localFetcher = fetcher;
+    if (!localFetcher.hasMore) return;
 
-    final documents = await fetcher.fetchNext();
+    final documents = await localFetcher.fetchNext();
     if (documents == null) return;
+    if (localFetcher.isDestroyed) return;
 
     items.addAll(
       documents.map((item) {
@@ -50,6 +53,7 @@ class _Fetcher<T> {
   int limit = 10;
   bool orderDescending = false;
   bool isLoading = false;
+  bool isDestroyed = false;
   bool hasMore = true; // flag for more items available or not
 
   _Fetcher(this.path, this.orderKey, {this.limit = 10, this.orderDescending = false});
@@ -65,6 +69,8 @@ class _Fetcher<T> {
       return null;
     }
 
+    isLoading = true;
+
     var query = FirebaseFirestore.instance
         .collection(this.path)
         .orderBy(this.orderKey, descending: orderDescending)
@@ -74,14 +80,18 @@ class _Fetcher<T> {
       query = query.startAfterDocument(lastDocument);
     }
 
-    var documents = (await query.getDocuments()).documents;
+    var documents = (await query.get()).docs;
 
     if (documents.length < this.limit) {
       hasMore = false;
     }
-    isLoading = false;
 
     lastDocument = documents[documents.length - 1];
+
+    isLoading = false;
+
+    if (isDestroyed)
+      return null;
 
     return documents;
   }
