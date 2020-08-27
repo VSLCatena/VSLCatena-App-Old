@@ -32,6 +32,14 @@ class Localization {
       'nl': 'Plaats',
       'en': 'Post'
     },
+    'general_at': {
+      'nl': 'om',
+      'en': 'at'
+    },
+    'general_edited_by': {
+      'nl': 'Aangepast door',
+      'en': 'Edited by'
+    },
     'title': {
       'nl': 'V.S.L. Catena',
       'en': 'V.S.L. Catena'
@@ -71,6 +79,18 @@ class Localization {
     'news_edit_item': {
       'nl': 'Nieuwsbericht aanpassen',
       'en': 'Edit news item'
+    },
+    'promo_title': {
+      'nl': 'V.S.L. Catena - Promo',
+      'en': 'V.S.L. Catena - Promo'
+    },
+    'promo_new_item': {
+      'nl': 'Nieuw promo item',
+      'en': 'New promo item'
+    },
+    'promo_edit_item': {
+      'nl': 'Promo item aanpassen',
+      'en': 'Edit promo item'
     }
   };
   

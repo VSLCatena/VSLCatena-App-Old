@@ -38,14 +38,14 @@ class _NewsListPageState extends State<NewsListPage> {
   _NewsListPageState() {
      newsFetcher = _NewsFetcher();
 
-     _scrollController.addListener(() {  
-      double maxScroll = _scrollController.position.maxScrollExtent;  
-      double currentScroll = _scrollController.position.pixels;  
-      double delta = MediaQuery.of(context).size.height * 0.20;  
-      if (maxScroll - currentScroll <= delta) {  
-        _load();  
-      }  
-    });  
+     _scrollController.addListener(() {
+       double maxScroll = _scrollController.position.maxScrollExtent;
+       double currentScroll = _scrollController.position.pixels;
+       double delta = MediaQuery.of(context).size.height * 0.20;
+       if (maxScroll - currentScroll <= delta) {
+         _load();
+       }
+    });
   }
 
   // @override
@@ -57,7 +57,7 @@ class _NewsListPageState extends State<NewsListPage> {
   void _refresh() async {
     newsFetcher.reset();
     await _load();
-    
+
     _refreshController.refreshCompleted();
   }
 
@@ -100,20 +100,21 @@ class _NewsListPageState extends State<NewsListPage> {
       ),
       floatingActionButton: Consumer<UserProvider>(
         builder: (context, provider, child) {
-          if (provider.currentUser?.role?.isAtLeast(Role.admin) == true) {
-            return FloatingActionButton(
-              child: Icon(Icons.add),
-              onPressed: (){
-                Navigator.pushNamed(
-                  context,
-                  '/news/edit/item',
-                  arguments: null
-                );
-              },
-            );
-          } else {
+          // If we're not admin, we just return an empty container
+          if (provider.currentUser?.role?.isAtLeast(Role.admin) != true) {
             return Container();
           }
+
+          return FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: (){
+              Navigator.pushNamed(
+                context,
+                '/news/edit/item',
+                arguments: null
+              );
+            },
+          );
         }
       )
       

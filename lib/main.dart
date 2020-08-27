@@ -3,10 +3,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vsl_catena/models/user_provider.dart';
+import 'package:vsl_catena/modules/home/home_page.dart';
 import 'package:vsl_catena/modules/login/login_page.dart';
 import 'package:vsl_catena/modules/news/news_edit_page.dart';
 import 'package:vsl_catena/modules/news/news_item_page.dart';
 import 'package:vsl_catena/modules/news/news_list_page.dart';
+import 'package:vsl_catena/modules/promo/promo_edit_page.dart';
+import 'package:vsl_catena/modules/promo/promo_item_page.dart';
+import 'package:vsl_catena/modules/promo/promo_list_page.dart';
 import 'package:vsl_catena/translation/localization.dart';
 
 Future<void> main() async {
@@ -25,7 +29,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var initialRoute = FirebaseAuth.instance.currentUser?.uid == null ? "/" : "/news";
+    var initialRoute = FirebaseAuth.instance.currentUser?.uid == null ? "/login" : "/";
     return MaterialApp(
       onGenerateTitle: (BuildContext context) => Localization.of(context).get('title'),
       initialRoute: initialRoute,
@@ -33,11 +37,14 @@ class MyApp extends StatelessWidget {
         const LocalizationDelegate()
       ],
       routes: {
-        '/': (context) => NewsListPage(),
+        '/': (context) => HomePage(),
         '/login': (context) => LoginPage(),
         '/news': (context) => NewsListPage(),
         '/news/item': (context) => NewsItemPage(),
-        '/news/edit/item': (context) => NewsEditPage()
+        '/news/edit/item': (context) => NewsEditPage(),
+        '/promo': (context) => PromoListPage(),
+        '/promo/item': (context) => PromoItemPage(),
+        '/promo/edit/item': (context) => PromoEditPage(),
       },
       supportedLocales: [
         const Locale('nl', ''),

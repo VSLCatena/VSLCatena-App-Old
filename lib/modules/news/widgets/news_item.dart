@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:vsl_catena/models/news.dart';
-import 'package:intl/intl.dart';
-import 'package:vsl_catena/utils/observing_state.dart';
+import 'package:vsl_catena/widgets/generic_banner.dart';
 
 class NewsItem extends StatefulWidget {
   final News news;
@@ -14,47 +13,18 @@ class NewsItem extends StatefulWidget {
   _NewsItem createState() => _NewsItem();
 }
 
-class _NewsItem extends State<NewsItem> with ObservingState {
-
-  // @override
-  // void initState() {
-  //   observeStates([
-  //     widget.news.user,
-  //     widget.news.userLastEdited
-  //   ]);
-  //   super.initState();
-  // }
-
-  String formatTimestamp(int timestamp) {
-    var format = new DateFormat('dd-MM-yyyy, HH:mm');
-    var date = new DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    return format.format(date);
-  }
+class _NewsItem extends State<NewsItem> {
 
   @override
   Widget build(BuildContext context) {
-
-    Widget editedAt = Container();
-    if (widget.news.userLastEdited != null) {
-      editedAt = Text(
-        "Last edited at " + formatTimestamp(widget.news.dateLastEdited.seconds) + 
-        " by " + (widget.news.userLastEdited?.item?.name ?? "")
-      );
-    }
-
+    final news = widget.news;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ListTile(
-          leading: FlutterLogo(),
-          title: Text(widget.news.title),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(widget.news.user?.item?.name ?? ""),
-              editedAt,
-            ],
-          )
+        GenericBanner(
+            news.title,
+            news.user, news.date.seconds,
+            news.userLastEdited, news.dateLastEdited?.seconds
         ),
         Padding(
           padding: EdgeInsets.all(8),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:vsl_catena/translation/localization.dart';
 
 
  class AppDrawer {
   static Widget createDrawer(BuildContext context) {
-    return Drawer(
+    var drawer = Drawer(
       // Add a ListView to the drawer. This ensures the user can scroll
       // through the options in the drawer if there isn't enough vertical
       // space to fit everything.
@@ -15,22 +16,30 @@ import 'package:flutter/material.dart';
             child: Image(image: AssetImage('assets/logo.png')),
           ),
           ListTile(
-            title: Text('Item 1'),
+            title: Text(Localization.of(context).get("drawer_news")),
             onTap: () {
-              // Update the state of the app.
-              // ...
+              navigateTo(context, '/');
             },
           ),
           ListTile(
-            title: Text('Item 2'),
+            title: Text(Localization.of(context).get("drawer_promo")),
             onTap: () {
-              // Update the state of the app.
-              // ...
+              navigateTo(context, '/promo');
             },
           ),
         ],
       ),
     );
+
+    return drawer;
   }
-  
+
+  static void navigateTo(BuildContext context, String namedRoute) {
+    if (namedRoute == "/") {
+      Navigator.popUntil(context, (route) => route.isFirst);
+      return;
+    }
+    Navigator.pushNamedAndRemoveUntil(context, namedRoute, (route) => route.isFirst);
+  }
+
 }

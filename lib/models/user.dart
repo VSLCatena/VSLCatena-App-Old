@@ -2,19 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vsl_catena/utils/item_fetcher.dart';
 
 class User {
-  String name;
-  Role role;
+  final String id;
+  final String name;
+  final Role role;
 
-  User(this.name, this.role);
+  User(this.id, this.name, this.role);
 
   factory User.fromSnapshot(DocumentSnapshot snapshot) {
     if (snapshot == null) return null;
 
-    try {
-      return User(snapshot.get("name"), Role.fromLevel(snapshot.get("role")));
-    } catch(e) {
-      return User("", Role.user);
-    }
+    return User(snapshot.id, snapshot.data()["name"], Role.fromLevel(snapshot.data()["role"]));
   }
 }
 
@@ -50,9 +47,21 @@ class UserFetcher extends ItemFetcher<User> {
   static Map<String, UserFetcher> _pool = Map();
 
   UserFetcher(DocumentReference user): super(user);
-  
-  factory UserFetcher.get(String userId) {
-    if (userId == null) return null;
+
+  factory UserFetcher.get(DocumentSnapshot snapshot, String fieldId) {
+    var userKey = snapshot.data()[fieldId];
+    if (userKey == null) return null;
+
+    String userId;
+    // I want it to be flexible where it can both be a string as a reference
+    if (userKey is String) {
+      userId = userKey;
+    } else if (userKey is DocumentReference) {
+      userId = userKey.id;
+    } else {
+      // If it's neither a string or a reference we just return null
+      return null;
+    }
 
     if (!_pool.containsKey(userId)) {
       _pool[userId] = UserFetcher(FirebaseFirestore.instance.collection("users").doc(userId));
