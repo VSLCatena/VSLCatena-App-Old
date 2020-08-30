@@ -49,8 +49,8 @@ class Localization {
       'en': 'V.S.L. Catena - Login'
     },
     'login_username': {
-      'nl': 'Emailadres',
-      'en': 'Email adress',
+      'nl': 'Gebruikersnaam',
+      'en': 'Username',
     },
     'login_password': {
       'nl': 'Wachtwoord',
@@ -59,6 +59,10 @@ class Localization {
     'login_login': {
       'nl': 'Login',
       'en': 'Login'
+    },
+    'login_error': {
+      'nl': 'Gebruikersnaam en/of wachtwoord is incorrect',
+      'en': 'Username and/or password are incorrect'
     },
     'drawer_home': {
       'nl': 'Home',

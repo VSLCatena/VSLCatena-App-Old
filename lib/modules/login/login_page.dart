@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -28,15 +30,22 @@ class _LoginPage extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   void _onLogin() async {
-    await FirebaseAuth.instance.signInAnonymously();
+    final result = await _doLoginCall();
+
+    // If something went wrong we show a snackBar
+    if (result.statusCode != 200) {
+      final snackBar = SnackBar(content: Text(Localization.of(this.context).get('login_error')));
+      Scaffold.of(this.context).showSnackBar(snackBar);
+      return;
+    }
+
+    // Decode the body
+    var data = jsonDecode(result.body);
+    // Log in with the custom token
+    await FirebaseAuth.instance.signInWithCustomToken(data['token']);
+
+    // Then check if we are logged in and if so navigate to next screen
     _checkIfLoggedIn();
-//    _doLoginCall();
-//    await FirebaseAuth.instance.signInAnonymously();
-    // TODO update UserProvider
-//    Navigator.popAndPushNamed(
-//      context,
-//      '/news'
-//    );
   }
 
   @override
@@ -56,18 +65,15 @@ class _LoginPage extends State<LoginPage> {
     }
   }
 
-  void _doLoginCall() async {
-    var response = http.post(
-        Uri.encodeFull("----"),
+  Future<http.Response> _doLoginCall() async {
+    return http.post(
+        Uri.encodeFull("https://applogin.vslcatena.nl/login"),
         body: {
           "username": _usernameController.text,
           "password": _passwordController.text,
         },
         headers: { "Accept": "application/json" }
     );
-
-    await response;
-
   }
 
   @override
@@ -104,6 +110,7 @@ class _LoginPage extends State<LoginPage> {
               Padding(
                 padding: EdgeInsets.all(8),
                 child: TextFormField(
+                  controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: Localization.of(context).get('login_password')
